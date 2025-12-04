@@ -54,7 +54,7 @@ export const CourseActions = ({ course }: CourseActionsProps) => {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem asChild>
-            <Link href={`/admin/course/${course.id}`} className="cursor-pointer flex gap-2">
+            <Link href={`/admin/course/view/${course.id}`} className="cursor-pointer flex gap-2">
               <Eye className="h-4 w-4" />
               View Details
             </Link>

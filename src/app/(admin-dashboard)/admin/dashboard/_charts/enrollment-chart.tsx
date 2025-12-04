@@ -23,7 +23,7 @@ interface EnrollmentChartProps {
   standalone?: boolean;
 }
 
-export const EnrollmentChart = ({ dateRange: externalDateRange, onDateRangeChange, standalone = true }: EnrollmentChartProps = {}) => {
+export const EnrollmentChart = ({ dateRange: externalDateRange, onDateRangeChange }: EnrollmentChartProps = {}) => {
   const initialDateRange = useMemo<DateRange>(
     () => ({
       from: subDays(new Date(), 6),

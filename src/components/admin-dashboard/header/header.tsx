@@ -12,7 +12,7 @@ import {
   navigationMenuTriggerStyle,
 } from '../../ui/navigation-menu';
 import { usePathname } from 'next/navigation';
-import { ArchiveIcon, CheckIcon, StopCircle } from 'lucide-react';
+import { CheckIcon, StopCircle } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../../ui/dropdown-menu';
 import { Button } from '../../ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '../../ui/avatar';

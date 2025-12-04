@@ -4,7 +4,6 @@ import { PlusIcon } from 'lucide-react';
 import Link from 'next/link';
 import { CoursesList } from './courses-list';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { StickyHeaders } from '@/components/admin-dashboard/header/sticky-header';
 
 export const metadata: Metadata = {
   title: 'Courses | Coursemaster',

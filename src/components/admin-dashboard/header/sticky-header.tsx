@@ -27,8 +27,8 @@ type StickyHeadersProps = {
 };
 
 export const StickyHeaders: React.FC<StickyHeadersProps> = ({ links, label, width, strictMatch, multiply }) => {
-  const barRef = useRef(null);
-  const elementRef = useRef(null);
+  const barRef = useRef<HTMLUListElement>(null);
+  const elementRef = useRef<HTMLDivElement>(null);
   const [isSticky, setSticky] = useState(false);
   const [scroll, setScroll] = useState<number | false>(false);
   const [isScrollingTowardsTop, setScrollingTowardsTop] = useState(false);
@@ -46,18 +46,28 @@ export const StickyHeaders: React.FC<StickyHeadersProps> = ({ links, label, widt
   }, []);
 
   useEffect(() => {
-    let element: HTMLElement | null = null;
     let lastScrollTop = 0;
+
     function checkSticky() {
+      const element = elementRef.current;
       if (!element) return;
+
       const rect = element.getBoundingClientRect();
-      if (rect.top <= 0) {
+      if (rect.top <= 70) {
         setSticky(true);
       } else {
         setSticky(false);
       }
 
-      const currentScrollTop = window.scrollY || document.documentElement.scrollTop;
+      // Find scrollable element
+      let currentScrollTop = window.scrollY;
+
+      if (!currentScrollTop) {
+        currentScrollTop = document.documentElement.scrollTop;
+      }
+      if (!currentScrollTop) {
+        currentScrollTop = document.body.scrollTop;
+      }
 
       if (currentScrollTop < lastScrollTop) {
         setScrollingTowardsTop(true);
@@ -68,23 +78,29 @@ export const StickyHeaders: React.FC<StickyHeadersProps> = ({ links, label, widt
       lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
     }
 
-    if (elementRef.current) {
-      element = elementRef.current;
-      window.addEventListener('scroll', checkSticky);
+    // Trigger immediately on mount to check initial state
+    checkSticky();
 
-      return () => {
-        window.removeEventListener('scroll', checkSticky);
-      };
+    // Find the scrollable parent element
+    let scrollElement = document.documentElement;
+    if (document.body.scrollHeight > window.innerHeight) {
+      scrollElement = document.body;
     }
-  }, [setSticky]);
+
+    const handleScroll = () => {
+      checkSticky();
+    };
+
+    scrollElement.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      scrollElement.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
-    <div
-      ref={elementRef}
-      className="md:px-10 px-5 my-4 sticky top-0 z-30 bg-background/95 dark:bg-[#111]/95 backdrop-blur supports-backdrop-filter:bg-background/60 dark:supports-backdrop-filter:bg-[#111]/60 transition-[top]"
-      style={{ top: multiply && isScrollingTowardsTop ? 47.5 * multiply : 0 }}
-    >
-      <div className="absolute bottom-[0.0123px] inset-x-0 border-b md:mx-10 mx-5"></div>
+    <div ref={elementRef} className="my-4 sticky top-0 z-30 bg-background transition-[top] px-2 md:px-4" style={{ top: multiply && isScrollingTowardsTop ? 47.5 * multiply : 56 }}>
+      <div className="absolute bottom-[0.0123px] inset-x-0 border-b"></div>
       <div className="absolute flex items-center inset-x-0 bottom-0 justify-between md:mx-10 mx-5 z-10 pointer-events-none" style={{ height: scroll || 0, display: scroll ? 'flex' : 'none' }}>
         <button className="bg-linear-to-r from-violet-50 to-transparent h-full flex items-center justify-center w-8 left transition-opacity opacity-0 pointer-events-none">
           <div className="w-3 h-3 text-primary stroke-2 mt-0.5">
@@ -98,7 +114,10 @@ export const StickyHeaders: React.FC<StickyHeadersProps> = ({ links, label, widt
         </button>
       </div>
       <ul ref={barRef} className="leading-none relative flex items-center gap-10 whitespace-nowrap text-sm font-medium overflow-x-auto no-scroll overflow-y-hidden">
-        <div className="flex items-center transition-[margin]" style={{ width: isSticky ? width || '6rem' : '0', marginLeft: isSticky ? '0' : '-2rem', opacity: isSticky ? '1' : '0' }}>
+        <div
+          className="flex items-center transition-[margin]"
+          style={{ width: isSticky ? `${width}ch` || '6rem' : '0', marginLeft: isSticky ? '0' : `-${Number(width) - 3}ch`, opacity: isSticky ? '1' : '0' }}
+        >
           <Link href="/" className={clsx({ 'pointer-events-none': !isSticky })}>
             <div className="text-primary dark:text-white flex items-center gap-2" style={{ minWidth: '6rem', width: '6rem' }}>
               <div>
