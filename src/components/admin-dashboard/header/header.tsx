@@ -46,7 +46,7 @@ export const Header = () => {
   const navigation: NavigationItem[] = [
     {
       name: 'Dashboard',
-      href: '/',
+      href: '/admin/dashboard',
     },
     {
       name: 'Courses',
@@ -72,7 +72,7 @@ export const Header = () => {
   ];
 
   return (
-    <header className="flex items-center justify-between md:px-4 px-2 pt-4 z-40 relative pb-4 __line bg-size-[8px_1px] bg-bottom min-w-0">
+    <header className="flex items-center justify-between md:px-4 px-2 pt-2 z-40 bg-background pb-2 __line bg-size-[8px_1px] bg-bottom min-w-0 sticky top-0">
       <Navigator navigation={navigation} open={open} setOpen={setOpen} />
       <div className="flex items-center xl:gap-4 max-md:flex-row max-md:items-center max-lg:flex-col max-lg:items-start max-lg:w-full min-w-0 gap-2">
         <Link href="/">

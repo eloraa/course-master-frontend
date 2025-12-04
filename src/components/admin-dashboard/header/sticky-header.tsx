@@ -104,7 +104,7 @@ export const StickyHeaders: React.FC<StickyHeadersProps> = ({ links, label, widt
               <div>
                 <MoveLeft className="w-4" />
               </div>
-              <h1>{label || 'Funnel Liner'}</h1>
+              <h1>{label || 'Coursemaster'}</h1>
             </div>
           </Link>
         </div>
