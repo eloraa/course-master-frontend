@@ -165,7 +165,7 @@ export const CourseForm = ({ course }: CourseFormProps) => {
                 disabled={isLoading}
                 className={errors.title ? 'border-destructive' : ''}
               />
-              {errors.title && <p className="text-sm text-destructive">{errors.title}</p>}
+              {errors.title && <p className="text-sm text-destructive-primary-primary">{errors.title}</p>}
             </div>
 
             <div className="space-y-2">
@@ -180,7 +180,7 @@ export const CourseForm = ({ course }: CourseFormProps) => {
                 className={errors.slug ? 'border-destructive' : ''}
               />
               <p className="text-xs text-muted-foreground">Lowercase letters, numbers, and hyphens only</p>
-              {errors.slug && <p className="text-sm text-destructive">{errors.slug}</p>}
+              {errors.slug && <p className="text-sm text-destructive-primary-primary">{errors.slug}</p>}
             </div>
 
             <div className="space-y-2">
@@ -196,7 +196,7 @@ export const CourseForm = ({ course }: CourseFormProps) => {
                 className={errors.shortDescription ? 'border-destructive' : ''}
               />
               <p className="text-xs text-muted-foreground">{formData.shortDescription.length}/500</p>
-              {errors.shortDescription && <p className="text-sm text-destructive">{errors.shortDescription}</p>}
+              {errors.shortDescription && <p className="text-sm text-destructive-primary-primary">{errors.shortDescription}</p>}
             </div>
 
             <div className="space-y-2">
@@ -211,7 +211,7 @@ export const CourseForm = ({ course }: CourseFormProps) => {
                 rows={5}
                 className={errors.fullDescription ? 'border-destructive' : ''}
               />
-              {errors.fullDescription && <p className="text-sm text-destructive">{errors.fullDescription}</p>}
+              {errors.fullDescription && <p className="text-sm text-destructive-primary-primary">{errors.fullDescription}</p>}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -226,7 +226,7 @@ export const CourseForm = ({ course }: CourseFormProps) => {
                   disabled={isLoading}
                   className={errors.category ? 'border-destructive' : ''}
                 />
-                {errors.category && <p className="text-sm text-destructive">{errors.category}</p>}
+                {errors.category && <p className="text-sm text-destructive-primary-primary">{errors.category}</p>}
               </div>
 
               <div className="space-y-2">
@@ -240,7 +240,7 @@ export const CourseForm = ({ course }: CourseFormProps) => {
                   disabled={isLoading}
                   className={errors.language ? 'border-destructive' : ''}
                 />
-                {errors.language && <p className="text-sm text-destructive">{errors.language}</p>}
+                {errors.language && <p className="text-sm text-destructive-primary-primary">{errors.language}</p>}
               </div>
             </div>
           </CardContent>
@@ -285,7 +285,7 @@ export const CourseForm = ({ course }: CourseFormProps) => {
                   min="0"
                   className={errors.price ? 'border-destructive' : ''}
                 />
-                {errors.price && <p className="text-sm text-destructive">{errors.price}</p>}
+                {errors.price && <p className="text-sm text-destructive-primary-primary">{errors.price}</p>}
               </div>
 
               <div className="space-y-2">

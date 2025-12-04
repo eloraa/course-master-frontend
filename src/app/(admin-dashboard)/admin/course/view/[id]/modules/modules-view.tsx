@@ -114,7 +114,7 @@ export const ModulesView = ({ courseId }: ModulesViewProps) => {
     return (
       <Card className="p-6">
         <div className="text-center space-y-4">
-          <AlertCircle className="h-12 w-12 mx-auto text-destructive" />
+          <AlertCircle className="h-12 w-12 mx-auto text-destructive-primary" />
           <div>
             <h3 className="font-semibold">Failed to load modules</h3>
             <p className="text-sm text-muted-foreground mt-1">
@@ -170,6 +170,7 @@ export const ModulesView = ({ courseId }: ModulesViewProps) => {
             <ModuleItem
               key={module.id}
               module={module}
+              courseId={courseId}
               index={index}
               isDragging={draggedIndex === index}
               draggedOver={draggedOverIndex === index}

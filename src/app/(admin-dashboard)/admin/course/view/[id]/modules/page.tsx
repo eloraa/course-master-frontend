@@ -23,6 +23,10 @@ export default async function ModulesPage({ params }: PageProps) {
             href: '/admin/course/view/' + courseId + '/modules',
           },
           {
+            label: 'Quiz',
+            href: '/admin/course/view/' + courseId + '/quiz',
+          },
+          {
             label: 'Assignments',
             href: '/admin/course/view/' + courseId + '/assignments',
           },

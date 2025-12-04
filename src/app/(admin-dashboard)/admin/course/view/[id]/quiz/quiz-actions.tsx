@@ -18,109 +18,109 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { EllipsisVertical, PencilIcon, Trash2Icon, Copy, Globe } from 'lucide-react';
+import { EllipsisVertical, PencilIcon, Trash2Icon, Copy, Eye, EyeOff } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { deleteModule, updateModule } from '@/data/admin/modules';
-import type { Module } from '@/data/admin/modules';
+import { deleteQuiz, publishQuiz, unpublishQuiz } from '@/data/admin/quizzes';
+import Link from 'next/link';
+import type { Quiz } from '@/data/admin/quizzes';
 
-interface ModuleActionsProps {
-  module: Module;
+interface QuizActionsProps {
+  quiz: Quiz;
   courseId: string;
-  onEdit: (module: Module) => void;
 }
 
-export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) => {
+export const QuizActions = ({ quiz, courseId }: QuizActionsProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const queryClient = useQueryClient();
 
-  const deleteModuleMutation = useMutation({
+  const deleteQuizMutation = useMutation({
     mutationFn: async (id: string) => {
-      return deleteModule(id);
+      return deleteQuiz(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules-list'] });
+      queryClient.invalidateQueries({ queryKey: ['quizzes-list'] });
       setShowDeleteDialog(false);
-      toast.success('Module deleted successfully');
+      toast.success('Quiz deleted successfully');
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : 'Failed to delete module';
+      const message = err instanceof Error ? err.message : 'Failed to delete quiz';
       toast.error(message);
     },
   });
 
-  const publishModuleMutation = useMutation({
+  const publishQuizMutation = useMutation({
     mutationFn: async (id: string) => {
-      return updateModule(id, { isPublished: true });
+      return publishQuiz(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules-list'] });
+      queryClient.invalidateQueries({ queryKey: ['quizzes-list'] });
       setShowPublishDialog(false);
-      toast.success('Module published successfully');
+      toast.success('Quiz published successfully');
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : 'Failed to publish module';
+      const message = err instanceof Error ? err.message : 'Failed to publish quiz';
       toast.error(message);
     },
   });
 
-  const unpublishModuleMutation = useMutation({
+  const unpublishQuizMutation = useMutation({
     mutationFn: async (id: string) => {
-      return updateModule(id, { isPublished: false });
+      return unpublishQuiz(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules-list'] });
+      queryClient.invalidateQueries({ queryKey: ['quizzes-list'] });
       setShowPublishDialog(false);
-      toast.success('Module unpublished successfully');
+      toast.success('Quiz unpublished successfully');
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : 'Failed to unpublish module';
+      const message = err instanceof Error ? err.message : 'Failed to unpublish quiz';
       toast.error(message);
     },
   });
 
-  const handleCopyModuleId = () => {
-    navigator.clipboard.writeText(module.id);
-    toast.success('Module ID copied to clipboard');
+  const handleCopyQuizId = () => {
+    navigator.clipboard.writeText(quiz.id);
+    toast.success('Quiz ID copied to clipboard');
   };
 
   const handleDelete = () => {
-    toast.promise(deleteModuleMutation.mutateAsync(module.id), {
-      loading: 'Deleting module...',
-      success: 'Module deleted successfully',
+    toast.promise(deleteQuizMutation.mutateAsync(quiz.id), {
+      loading: 'Deleting quiz...',
+      success: 'Quiz deleted successfully',
       error: (err: unknown) => {
         if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
           return (err as { message: string }).message;
         }
-        return 'Failed to delete module';
+        return 'Failed to delete quiz';
       },
     });
   };
 
   const handlePublish = () => {
-    toast.promise(publishModuleMutation.mutateAsync(module.id), {
-      loading: 'Publishing module...',
-      success: 'Module published successfully',
+    toast.promise(publishQuizMutation.mutateAsync(quiz.id), {
+      loading: 'Publishing quiz...',
+      success: 'Quiz published successfully',
       error: (err: unknown) => {
         if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
           return (err as { message: string }).message;
         }
-        return 'Failed to publish module';
+        return 'Failed to publish quiz';
       },
     });
   };
 
   const handleUnpublish = () => {
-    toast.promise(unpublishModuleMutation.mutateAsync(module.id), {
-      loading: 'Unpublishing module...',
-      success: 'Module unpublished successfully',
+    toast.promise(unpublishQuizMutation.mutateAsync(quiz.id), {
+      loading: 'Unpublishing quiz...',
+      success: 'Quiz unpublished successfully',
       error: (err: unknown) => {
         if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
           return (err as { message: string }).message;
         }
-        return 'Failed to unpublish module';
+        return 'Failed to unpublish quiz';
       },
     });
   };
@@ -135,22 +135,18 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => {
-              onEdit(module);
-              setIsOpen(false);
-            }}
-            className="flex gap-2"
-          >
-            <PencilIcon className="h-4 w-4" />
-            Edit
+          <DropdownMenuItem asChild>
+            <Link href={`/admin/course/view/${courseId}/quiz/${quiz.id}/edit`} className="cursor-pointer flex gap-2">
+              <PencilIcon className="h-4 w-4" />
+              Edit
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleCopyModuleId} className="flex gap-2">
+          <DropdownMenuItem onClick={handleCopyQuizId} className="flex gap-2">
             <Copy className="h-4 w-4" />
             Copy ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          {!module.isPublished ? (
+          {!quiz.isPublished ? (
             <DropdownMenuItem
               onClick={() => {
                 setShowPublishDialog(true);
@@ -158,7 +154,7 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
               }}
               className="flex gap-2"
             >
-              <Globe className="h-4 w-4" />
+              <Eye className="h-4 w-4" />
               Publish
             </DropdownMenuItem>
           ) : (
@@ -169,7 +165,7 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
               }}
               className="flex gap-2"
             >
-              <Globe className="h-4 w-4" />
+              <EyeOff className="h-4 w-4" />
               Unpublish
             </DropdownMenuItem>
           )}
@@ -191,27 +187,25 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="md:max-w-md pt-6">
           <DialogHeader>
-            <DialogTitle>Delete Module</DialogTitle>
+            <DialogTitle>Delete Quiz</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this module? This action cannot be undone.
+              Are you sure you want to delete this quiz? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <p className="text-sm">
-              <span className="font-semibold">Module:</span> {module.title}
+              <span className="font-semibold">Quiz:</span> {quiz.title}
             </p>
-            {module.lessonCount > 0 && (
-              <p className="text-sm text-destructive-primary">
-                <span className="font-semibold">Warning:</span> This module contains {module.lessonCount} lesson{module.lessonCount !== 1 ? 's' : ''} that will also be deleted.
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground">
+              <span className="font-semibold">Questions:</span> {quiz.questionCount}
+            </p>
           </div>
           <DialogFooter className="flex max-md:flex-col max-md:items-end max-md:space-y-2">
             <Button
               variant="outline"
               onClick={() => setShowDeleteDialog(false)}
               className="w-20 cursor-pointer"
-              disabled={deleteModuleMutation.isPending}
+              disabled={deleteQuizMutation.isPending}
             >
               Cancel
             </Button>
@@ -219,9 +213,9 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
               variant="destructive"
               className="w-20 cursor-pointer"
               onClick={handleDelete}
-              disabled={deleteModuleMutation.isPending}
+              disabled={deleteQuizMutation.isPending}
             >
-              {deleteModuleMutation.isPending ? <Spinner className="size-4" /> : 'Delete'}
+              {deleteQuizMutation.isPending ? <Spinner className="size-4" /> : 'Delete'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -232,17 +226,17 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
         <DialogContent className="md:max-w-md pt-6">
           <DialogHeader>
             <DialogTitle>
-              {module.isPublished ? 'Unpublish Module' : 'Publish Module'}
+              {quiz.isPublished ? 'Unpublish Quiz' : 'Publish Quiz'}
             </DialogTitle>
             <DialogDescription>
-              {module.isPublished
-                ? 'Are you sure you want to unpublish this module? It will no longer be visible to students.'
-                : 'Are you sure you want to publish this module? It will become visible to students.'}
+              {quiz.isPublished
+                ? 'Are you sure you want to unpublish this quiz? It will no longer be visible to students.'
+                : 'Are you sure you want to publish this quiz? It will become visible to students.'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <p className="text-sm">
-              <span className="font-semibold">Module:</span> {module.title}
+              <span className="font-semibold">Quiz:</span> {quiz.title}
             </p>
           </div>
           <DialogFooter className="flex max-md:flex-col max-md:items-end max-md:space-y-2">
@@ -250,19 +244,19 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
               variant="outline"
               onClick={() => setShowPublishDialog(false)}
               className="w-20 cursor-pointer"
-              disabled={publishModuleMutation.isPending || unpublishModuleMutation.isPending}
+              disabled={publishQuizMutation.isPending || unpublishQuizMutation.isPending}
             >
               Cancel
             </Button>
             <Button
-              variant={module.isPublished ? 'destructive' : 'default'}
+              variant={quiz.isPublished ? 'destructive' : 'default'}
               className="w-20 cursor-pointer"
-              onClick={module.isPublished ? handleUnpublish : handlePublish}
-              disabled={publishModuleMutation.isPending || unpublishModuleMutation.isPending}
+              onClick={quiz.isPublished ? handleUnpublish : handlePublish}
+              disabled={publishQuizMutation.isPending || unpublishQuizMutation.isPending}
             >
-              {publishModuleMutation.isPending || unpublishModuleMutation.isPending ? (
+              {publishQuizMutation.isPending || unpublishQuizMutation.isPending ? (
                 <Spinner className="size-4" />
-              ) : module.isPublished ? (
+              ) : quiz.isPublished ? (
                 'Unpublish'
               ) : (
                 'Publish'

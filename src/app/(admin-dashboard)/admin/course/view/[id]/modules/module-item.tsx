@@ -1,10 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
+import { Plus } from 'lucide-react';
 import {
   Collapsible,
   CollapsibleTrigger,
@@ -13,10 +15,17 @@ import {
 import { GripVertical, ChevronRight, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ModuleActions } from './module-actions';
+import { LessonItem } from './lesson-item';
+import { LessonFormDialog } from './lesson-form-dialog';
+import { useLessonsList, updateLesson } from '@/data/admin/lessons';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import type { Module } from '@/data/admin/modules';
+import type { Lesson } from '@/data/admin/lessons';
 
 interface ModuleItemProps {
   module: Module;
+  courseId: string;
   index: number;
   isDragging: boolean;
   draggedOver: boolean;
@@ -32,6 +41,7 @@ export const ModuleItem = React.forwardRef<HTMLDivElement, ModuleItemProps>(
   (
     {
       module,
+      courseId,
       isDragging,
       draggedOver,
       onDragStart,
@@ -43,6 +53,87 @@ export const ModuleItem = React.forwardRef<HTMLDivElement, ModuleItemProps>(
     },
     ref
   ) => {
+    const [lessons, setLessons] = useState<Lesson[]>([]);
+    const [draggedLessonIndex, setDraggedLessonIndex] = useState<number | null>(null);
+    const [draggedLessonOverIndex, setDraggedLessonOverIndex] = useState<number | null>(null);
+    const [showLessonForm, setShowLessonForm] = useState(false);
+    const [editingLesson, setEditingLesson] = useState<Lesson | null>(null);
+
+    const queryClient = useQueryClient();
+    const { data: lessonsData, isLoading: lessonsLoading } = useLessonsList({
+      module: module.id,
+    });
+
+    useEffect(() => {
+      if (lessonsData?.data) {
+        const sorted = [...lessonsData.data].sort((a, b) => a.order - b.order);
+        setLessons(sorted);
+      }
+    }, [lessonsData]);
+
+    const updateLessonOrderMutation = useMutation({
+      mutationFn: async (lessonsToUpdate: Lesson[]) => {
+        await Promise.all(
+          lessonsToUpdate.map((lesson, idx) =>
+            updateLesson(lesson.id, { order: idx })
+          )
+        );
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
+        toast.success('Lesson order updated successfully');
+      },
+      onError: () => {
+        if (lessonsData?.data) {
+          const sorted = [...lessonsData.data].sort((a, b) => a.order - b.order);
+          setLessons(sorted);
+        }
+        toast.error('Failed to update lesson order');
+      },
+    });
+
+    const handleLessonDragStart = (index: number) => {
+      setDraggedLessonIndex(index);
+    };
+
+    const handleLessonDragOver = (index: number) => {
+      if (draggedLessonIndex === null || draggedLessonIndex === index) return;
+
+      const reordered = [...lessons];
+      const [removed] = reordered.splice(draggedLessonIndex, 1);
+      reordered.splice(index, 0, removed);
+
+      setLessons(reordered);
+      setDraggedLessonIndex(index);
+      setDraggedLessonOverIndex(index);
+    };
+
+    const handleLessonDragEnd = async () => {
+      if (draggedLessonIndex === null) return;
+
+      setDraggedLessonIndex(null);
+      setDraggedLessonOverIndex(null);
+
+      await updateLessonOrderMutation.mutateAsync(lessons);
+    };
+
+    const handleEditLesson = (lesson: Lesson) => {
+      setEditingLesson(lesson);
+      setShowLessonForm(true);
+    };
+
+    const handleCreateLesson = () => {
+      setEditingLesson(null);
+      setShowLessonForm(true);
+    };
+
+    const handleLessonFormClose = (isOpenForm: boolean) => {
+      if (!isOpenForm) {
+        setShowLessonForm(false);
+        setEditingLesson(null);
+      }
+    };
+
     const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
       e.dataTransfer.effectAllowed = 'move';
       e.dataTransfer.setData('text/html', e.currentTarget.innerHTML);
@@ -131,17 +222,76 @@ export const ModuleItem = React.forwardRef<HTMLDivElement, ModuleItemProps>(
 
           <CollapsibleContent>
             <Separator />
-            <div className="p-4">
-              <Card className="border-dashed bg-muted/10">
-                <div className="p-8 text-center">
-                  <BookOpen className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">
-                    Lessons will be displayed here
-                  </p>
+            <div className="p-4 space-y-4">
+              {/* Lessons Header */}
+              <div className="flex items-center justify-between">
+                <h4 className="font-semibold text-sm">
+                  Lessons ({lessons.length})
+                </h4>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleCreateLesson}
+                  disabled={lessonsLoading}
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Add Lesson
+                </Button>
+              </div>
+
+              {/* Lessons Loading */}
+              {lessonsLoading && (
+                <div className="flex items-center justify-center py-8">
+                  <Spinner className="h-5 w-5" />
                 </div>
-              </Card>
+              )}
+
+              {/* Lessons List */}
+              {!lessonsLoading && lessons.length === 0 ? (
+                <Card className="border-dashed bg-muted/10">
+                  <div className="p-6 text-center">
+                    <BookOpen className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm text-muted-foreground mb-3">
+                      No lessons yet. Create one to get started!
+                    </p>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleCreateLesson}
+                    >
+                      <Plus className="h-3 w-3 mr-1" />
+                      Create First Lesson
+                    </Button>
+                  </div>
+                </Card>
+              ) : (
+                <div className="space-y-2">
+                  {lessons.map((lesson, index) => (
+                    <LessonItem
+                      key={lesson.id}
+                      lesson={lesson}
+                      isDragging={draggedLessonIndex === index}
+                      draggedOver={draggedLessonOverIndex === index}
+                      onDragStart={() => handleLessonDragStart(index)}
+                      onDragOver={() => handleLessonDragOver(index)}
+                      onDragEnd={handleLessonDragEnd}
+                      onEdit={handleEditLesson}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </CollapsibleContent>
+
+          {/* Lesson Form Dialog */}
+          <LessonFormDialog
+            open={showLessonForm}
+            onOpenChange={handleLessonFormClose}
+            lesson={editingLesson}
+            courseId={courseId}
+            moduleId={module.id}
+            nextOrder={lessons.length}
+          />
         </Collapsible>
       </Card>
     );

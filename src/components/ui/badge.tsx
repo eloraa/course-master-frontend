@@ -13,7 +13,7 @@ const badgeVariants = cva(
           'rounded-sm px-2 py-px text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 bg-brand-twilight text-brand-twilight-foreground hover:bg-brand-twilight/80',
         secondary: 'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
         destructive:
-          'border-transparent bg-destructive-primary text-destructive-primary-foreground [a&]:hover:bg-destructive-primary/90 focus-visible:ring-destructive-primary/20 dark:focus-visible:ring-destructive-primary/40 dark:bg-destructive-primary/60',
+          'border-transparent bg-destructive-primary text-destructive-primary-primary-foreground [a&]:hover:bg-destructive-primary/90 focus-visible:ring-destructive-primary/20 dark:focus-visible:ring-destructive-primary/40 dark:bg-destructive-primary/60',
         outline: 'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
       },
     },

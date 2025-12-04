@@ -209,7 +209,7 @@ export const CourseActions = ({ course }: CourseActionsProps) => {
             </>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-destructive-primary flex gap-2">
+          <DropdownMenuItem onClick={() => setShowDeleteDialog(true)} className="text-destructive-primary-primary-primary flex gap-2">
             <Trash2Icon className="h-4 w-4" />
             Delete
           </DropdownMenuItem>
@@ -228,7 +228,7 @@ export const CourseActions = ({ course }: CourseActionsProps) => {
               <span className="font-semibold">Course:</span> {course.title}
             </p>
             {course.totalEnrolled > 0 && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive-primary-primary">
                 <span className="font-semibold">Warning:</span> {course.totalEnrolled} student(s) are enrolled in this course.
               </p>
             )}
@@ -300,7 +300,7 @@ export const CourseActions = ({ course }: CourseActionsProps) => {
               <span className="font-semibold">Course:</span> {course.title}
             </p>
             {course.totalEnrolled > 0 && (
-              <p className="text-sm text-destructive">
+              <p className="text-sm text-destructive-primary-primary">
                 <span className="font-semibold">Warning:</span> {course.totalEnrolled} student(s) are currently enrolled.
               </p>
             )}

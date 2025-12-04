@@ -151,7 +151,7 @@ export const ModuleFormDialog = ({
           {/* Title */}
           <div className="space-y-2">
             <Label htmlFor="title">
-              Title <span className="text-destructive">*</span>
+              Title <span className="text-destructive-primary">*</span>
             </Label>
             <Input
               id="title"
@@ -161,7 +161,7 @@ export const ModuleFormDialog = ({
               disabled={isSubmitting}
             />
             {errors.title && (
-              <p className="text-sm text-destructive">{errors.title}</p>
+              <p className="text-sm text-destructive-primary">{errors.title}</p>
             )}
           </div>
 
@@ -180,7 +180,7 @@ export const ModuleFormDialog = ({
               {description.length}/1000 characters
             </p>
             {errors.description && (
-              <p className="text-sm text-destructive">{errors.description}</p>
+              <p className="text-sm text-destructive-primary">{errors.description}</p>
             )}
           </div>
 

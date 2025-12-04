@@ -18,109 +18,110 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Spinner } from '@/components/ui/spinner';
-import { EllipsisVertical, PencilIcon, Trash2Icon, Copy, Globe } from 'lucide-react';
+import { EllipsisVertical, PencilIcon, Trash2Icon, Copy, Eye, EyeOff } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { deleteModule, updateModule } from '@/data/admin/modules';
-import type { Module } from '@/data/admin/modules';
+import { deleteLesson, updateLesson } from '@/data/admin/lessons';
+import type { Lesson } from '@/data/admin/lessons';
 
-interface ModuleActionsProps {
-  module: Module;
-  courseId: string;
-  onEdit: (module: Module) => void;
+interface LessonActionsProps {
+  lesson: Lesson;
+  onEdit: (lesson: Lesson) => void;
 }
 
-export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) => {
+export const LessonActions = ({ lesson, onEdit }: LessonActionsProps) => {
   const [isOpen, setIsOpen] = React.useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
   const queryClient = useQueryClient();
 
+  const deleteModule = lesson.module;
+
   const deleteModuleMutation = useMutation({
     mutationFn: async (id: string) => {
-      return deleteModule(id);
+      return deleteLesson(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules-list'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
       setShowDeleteDialog(false);
-      toast.success('Module deleted successfully');
+      toast.success('Lesson deleted successfully');
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : 'Failed to delete module';
+      const message = err instanceof Error ? err.message : 'Failed to delete lesson';
       toast.error(message);
     },
   });
 
   const publishModuleMutation = useMutation({
     mutationFn: async (id: string) => {
-      return updateModule(id, { isPublished: true });
+      return updateLesson(id, { isPublished: true });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules-list'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
       setShowPublishDialog(false);
-      toast.success('Module published successfully');
+      toast.success('Lesson published successfully');
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : 'Failed to publish module';
+      const message = err instanceof Error ? err.message : 'Failed to publish lesson';
       toast.error(message);
     },
   });
 
   const unpublishModuleMutation = useMutation({
     mutationFn: async (id: string) => {
-      return updateModule(id, { isPublished: false });
+      return updateLesson(id, { isPublished: false });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['modules-list'] });
+      queryClient.invalidateQueries({ queryKey: ['lessons-list'] });
       setShowPublishDialog(false);
-      toast.success('Module unpublished successfully');
+      toast.success('Lesson unpublished successfully');
     },
     onError: (err: unknown) => {
-      const message = err instanceof Error ? err.message : 'Failed to unpublish module';
+      const message = err instanceof Error ? err.message : 'Failed to unpublish lesson';
       toast.error(message);
     },
   });
 
-  const handleCopyModuleId = () => {
-    navigator.clipboard.writeText(module.id);
-    toast.success('Module ID copied to clipboard');
+  const handleCopyLessonId = () => {
+    navigator.clipboard.writeText(lesson.id);
+    toast.success('Lesson ID copied to clipboard');
   };
 
   const handleDelete = () => {
-    toast.promise(deleteModuleMutation.mutateAsync(module.id), {
-      loading: 'Deleting module...',
-      success: 'Module deleted successfully',
+    toast.promise(deleteModuleMutation.mutateAsync(lesson.id), {
+      loading: 'Deleting lesson...',
+      success: 'Lesson deleted successfully',
       error: (err: unknown) => {
         if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
           return (err as { message: string }).message;
         }
-        return 'Failed to delete module';
+        return 'Failed to delete lesson';
       },
     });
   };
 
   const handlePublish = () => {
-    toast.promise(publishModuleMutation.mutateAsync(module.id), {
-      loading: 'Publishing module...',
-      success: 'Module published successfully',
+    toast.promise(publishModuleMutation.mutateAsync(lesson.id), {
+      loading: 'Publishing lesson...',
+      success: 'Lesson published successfully',
       error: (err: unknown) => {
         if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
           return (err as { message: string }).message;
         }
-        return 'Failed to publish module';
+        return 'Failed to publish lesson';
       },
     });
   };
 
   const handleUnpublish = () => {
-    toast.promise(unpublishModuleMutation.mutateAsync(module.id), {
-      loading: 'Unpublishing module...',
-      success: 'Module unpublished successfully',
+    toast.promise(unpublishModuleMutation.mutateAsync(lesson.id), {
+      loading: 'Unpublishing lesson...',
+      success: 'Lesson unpublished successfully',
       error: (err: unknown) => {
         if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
           return (err as { message: string }).message;
         }
-        return 'Failed to unpublish module';
+        return 'Failed to unpublish lesson';
       },
     });
   };
@@ -129,7 +130,7 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
     <>
       <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0">
+          <Button variant="ghost" className="h-8 w-8 p-0" size="icon">
             <span className="sr-only">Open menu</span>
             <EllipsisVertical className="h-4 w-4" />
           </Button>
@@ -137,7 +138,7 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
         <DropdownMenuContent align="end">
           <DropdownMenuItem
             onClick={() => {
-              onEdit(module);
+              onEdit(lesson);
               setIsOpen(false);
             }}
             className="flex gap-2"
@@ -145,12 +146,12 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
             <PencilIcon className="h-4 w-4" />
             Edit
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={handleCopyModuleId} className="flex gap-2">
+          <DropdownMenuItem onClick={handleCopyLessonId} className="flex gap-2">
             <Copy className="h-4 w-4" />
             Copy ID
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          {!module.isPublished ? (
+          {!lesson.isPublished ? (
             <DropdownMenuItem
               onClick={() => {
                 setShowPublishDialog(true);
@@ -158,7 +159,7 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
               }}
               className="flex gap-2"
             >
-              <Globe className="h-4 w-4" />
+              <Eye className="h-4 w-4" />
               Publish
             </DropdownMenuItem>
           ) : (
@@ -169,7 +170,7 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
               }}
               className="flex gap-2"
             >
-              <Globe className="h-4 w-4" />
+              <EyeOff className="h-4 w-4" />
               Unpublish
             </DropdownMenuItem>
           )}
@@ -191,20 +192,18 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
       <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <DialogContent className="md:max-w-md pt-6">
           <DialogHeader>
-            <DialogTitle>Delete Module</DialogTitle>
+            <DialogTitle>Delete Lesson</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete this module? This action cannot be undone.
+              Are you sure you want to delete this lesson? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <p className="text-sm">
-              <span className="font-semibold">Module:</span> {module.title}
+              <span className="font-semibold">Lesson:</span> {lesson.title}
             </p>
-            {module.lessonCount > 0 && (
-              <p className="text-sm text-destructive-primary">
-                <span className="font-semibold">Warning:</span> This module contains {module.lessonCount} lesson{module.lessonCount !== 1 ? 's' : ''} that will also be deleted.
-              </p>
-            )}
+            <p className="text-sm text-muted-foreground">
+              Type: <span className="capitalize font-medium">{lesson.type}</span>
+            </p>
           </div>
           <DialogFooter className="flex max-md:flex-col max-md:items-end max-md:space-y-2">
             <Button
@@ -232,17 +231,17 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
         <DialogContent className="md:max-w-md pt-6">
           <DialogHeader>
             <DialogTitle>
-              {module.isPublished ? 'Unpublish Module' : 'Publish Module'}
+              {lesson.isPublished ? 'Unpublish Lesson' : 'Publish Lesson'}
             </DialogTitle>
             <DialogDescription>
-              {module.isPublished
-                ? 'Are you sure you want to unpublish this module? It will no longer be visible to students.'
-                : 'Are you sure you want to publish this module? It will become visible to students.'}
+              {lesson.isPublished
+                ? 'Are you sure you want to unpublish this lesson? It will no longer be visible to students.'
+                : 'Are you sure you want to publish this lesson? It will become visible to students.'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
             <p className="text-sm">
-              <span className="font-semibold">Module:</span> {module.title}
+              <span className="font-semibold">Lesson:</span> {lesson.title}
             </p>
           </div>
           <DialogFooter className="flex max-md:flex-col max-md:items-end max-md:space-y-2">
@@ -255,14 +254,14 @@ export const ModuleActions = ({ module, courseId, onEdit }: ModuleActionsProps) 
               Cancel
             </Button>
             <Button
-              variant={module.isPublished ? 'destructive' : 'default'}
+              variant={lesson.isPublished ? 'destructive' : 'default'}
               className="w-20 cursor-pointer"
-              onClick={module.isPublished ? handleUnpublish : handlePublish}
+              onClick={lesson.isPublished ? handleUnpublish : handlePublish}
               disabled={publishModuleMutation.isPending || unpublishModuleMutation.isPending}
             >
               {publishModuleMutation.isPending || unpublishModuleMutation.isPending ? (
                 <Spinner className="size-4" />
-              ) : module.isPublished ? (
+              ) : lesson.isPublished ? (
                 'Unpublish'
               ) : (
                 'Publish'

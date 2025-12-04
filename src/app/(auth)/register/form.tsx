@@ -53,7 +53,7 @@ function FieldError({ errors }: FieldErrorProps) {
   }
 
   return (
-    <div className="text-xs text-destructive-foreground font-mono space-y-1">
+    <div className="text-xs text-destructive-primary-foreground font-mono space-y-1">
       {errors.map(error => (
         <p key={error}>{error}</p>
       ))}
@@ -140,7 +140,7 @@ export function RegisterForm() {
         </ul>
       </div>
 
-      {state.message && <div className="text-sm text-destructive-foreground">{state.message}</div>}
+      {state.message && <div className="text-sm text-destructive-primary-foreground">{state.message}</div>}
 
       <SubmitButton />
 

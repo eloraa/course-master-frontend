@@ -68,7 +68,7 @@ export function LoginForm() {
               <FormControl>
                 <Input placeholder="Email" type="email" {...field} />
               </FormControl>
-              <FormMessage className="font-mono text-xs text-destructive-foreground" />
+              <FormMessage className="font-mono text-xs text-destructive-primary-foreground" />
             </FormItem>
           )}
         />
@@ -87,12 +87,12 @@ export function LoginForm() {
               <FormControl>
                 <Input placeholder="Password" type="password" {...field} />
               </FormControl>
-              <FormMessage className="font-mono text-xs text-destructive-primary" />
+              <FormMessage className="font-mono text-xs text-destructive-primary-primary" />
             </FormItem>
           )}
         />
 
-        {error && <div className="text-sm  text-destructive-foreground">{error}</div>}
+        {error && <div className="text-sm  text-destructive-primary-foreground">{error}</div>}
 
         <div className="w-full space-y-3">
           <Button type="submit" disabled={isLoading} className="w-full cursor-pointer disabled:opacity-100 disabled:bg-muted dark:disabled:bg-muted disabled:text-primary border border-input">
