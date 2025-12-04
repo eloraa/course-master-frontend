@@ -35,12 +35,14 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         const res = await fetch(`${process.env.API_URL}/auth/login`, {
           method: 'POST',
-          body: JSON.stringify({ ...credentials }),
+          body: JSON.stringify(credentials),
+          headers: {
+            'Content-Type': 'application/json',
+          },
         });
 
-        console.log(res, 'resres');
-
         const responseData = await res.json();
+        console.log(responseData, credentials, 'resres');
 
         if (!res.ok || responseData.status !== 'success' || !responseData.user) {
           throw new Error(responseData.message || 'Invalid credentials');

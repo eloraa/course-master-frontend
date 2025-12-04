@@ -94,7 +94,7 @@ export function LoginForm() {
 
         {error && <div className="text-sm  text-destructive-foreground">{error}</div>}
 
-        <div className="w-full">
+        <div className="w-full space-y-3">
           <Button type="submit" disabled={isLoading} className="w-full cursor-pointer disabled:opacity-100 disabled:bg-muted dark:disabled:bg-muted disabled:text-primary border border-input">
             {isLoading ? (
               <div className="flex justify-center items-center w-full">
@@ -104,6 +104,13 @@ export function LoginForm() {
               'Login'
             )}
           </Button>
+
+          <p className="text-sm text-muted-foreground text-center">
+            Don&apos;t have an account?{' '}
+            <Link href="/register" className="font-medium underline">
+              Create one
+            </Link>
+          </p>
         </div>
       </form>
     </Form>
