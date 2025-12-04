@@ -5,9 +5,11 @@ import { authHeaders } from '@/lib/api';
 // Course status types and constants
 export type CourseStatus = 'draft' | 'published';
 export type CourseRootStatus = 'draft' | 'published';
+export type CourseVisibility = 'public' | 'unlisted' | 'private';
 
 export const COURSE_STATUSES: CourseStatus[] = ['draft', 'published'];
 export const COURSE_ROOT_STATUSES: CourseRootStatus[] = ['draft', 'published'];
+export const COURSE_VISIBILITY_OPTIONS: CourseVisibility[] = ['public', 'unlisted', 'private'];
 
 // Type definitions
 export interface Instructor {
@@ -41,6 +43,7 @@ export interface CourseData {
   ratingAverage: number;
   ratingCount: number;
   isPublished: boolean;
+  visibility: CourseVisibility;
   createdAt: string;
   updatedAt: string;
 }
@@ -176,6 +179,48 @@ export const deleteCourse = async (id: string): Promise<{ status: number; messag
     const json = await response.json();
     if (!response.ok) throw new Error(json?.message || 'Failed to delete course');
     return json;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const publishCourse = async (id: string): Promise<CourseDetailResponse> => {
+  try {
+    const response = await api.patch(`/v1/admin/courses/${id}/publish`, {
+      headers: await authHeaders(),
+      body: JSON.stringify({}),
+    });
+    const json = await response.json();
+    if (!response.ok) throw new Error(json?.message || 'Failed to publish course');
+    return json as CourseDetailResponse;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const unpublishCourse = async (id: string): Promise<CourseDetailResponse> => {
+  try {
+    const response = await api.patch(`/v1/admin/courses/${id}/unpublish`, {
+      headers: await authHeaders(),
+      body: JSON.stringify({}),
+    });
+    const json = await response.json();
+    if (!response.ok) throw new Error(json?.message || 'Failed to unpublish course');
+    return json as CourseDetailResponse;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateCourseVisibility = async (id: string, visibility: CourseVisibility): Promise<CourseDetailResponse> => {
+  try {
+    const response = await api.patch(`/v1/admin/courses/${id}/visibility`, {
+      headers: await authHeaders(),
+      body: JSON.stringify({ visibility }),
+    });
+    const json = await response.json();
+    if (!response.ok) throw new Error(json?.message || 'Failed to update course visibility');
+    return json as CourseDetailResponse;
   } catch (error) {
     throw error;
   }

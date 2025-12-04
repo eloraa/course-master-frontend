@@ -7,10 +7,20 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, BookOpen, Users, Star, Calendar, Tag, Globe, DollarSign } from 'lucide-react';
-import { useCourseById } from '@/data/admin/courses';
+import { useCourseById, publishCourse, unpublishCourse } from '@/data/admin/courses';
 import { Spinner } from '@/components/ui/spinner';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { BatchSelector } from './batch-selector';
 
 interface CourseViewProps {
   courseId: string;
@@ -29,9 +39,9 @@ const getLevelColor = (level: string | undefined) => {
   }
 };
 
-const getPublishStatusColor = (isPublished: boolean) => {
-  return isPublished ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
-};
+// const getPublishStatusColor = (isPublished: boolean) => {
+//   return isPublished ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' : 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200';
+// };
 
 const formatLevel = (level: string | undefined) => {
   if (!level) return '-';
@@ -40,6 +50,53 @@ const formatLevel = (level: string | undefined) => {
 
 export const CourseView = ({ courseId }: CourseViewProps) => {
   const { data, isLoading, error } = useCourseById(courseId);
+  const queryClient = useQueryClient();
+
+  const publishCourseMutation = useMutation({
+    mutationFn: async () => {
+      return publishCourse(courseId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['course', courseId] });
+      toast.success('Course published successfully');
+    },
+  });
+
+  const unpublishCourseMutation = useMutation({
+    mutationFn: async () => {
+      return unpublishCourse(courseId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['course', courseId] });
+      toast.success('Course unpublished successfully');
+    },
+  });
+
+  const handleStatusChange = (value: string) => {
+    if (value === 'published') {
+      toast.promise(publishCourseMutation.mutateAsync(), {
+        loading: 'Publishing course...',
+        success: 'Course published successfully',
+        error: (err: unknown) => {
+          if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
+            return (err as { message: string }).message;
+          }
+          return 'Failed to publish course';
+        },
+      });
+    } else {
+      toast.promise(unpublishCourseMutation.mutateAsync(), {
+        loading: 'Unpublishing course...',
+        success: 'Course unpublished successfully',
+        error: (err: unknown) => {
+          if (typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: string }).message === 'string') {
+            return (err as { message: string }).message;
+          }
+          return 'Failed to unpublish course';
+        },
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -114,10 +171,24 @@ export const CourseView = ({ courseId }: CourseViewProps) => {
               <CardTitle className="text-base">Status & Info</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Status</span>
-                <Badge className={cn('text-xs', getPublishStatusColor(course.isPublished))}>{course.isPublished ? 'Published' : 'Draft'}</Badge>
+              <div className="space-y-2">
+                <label className="text-sm text-muted-foreground">Status</label>
+                <Select
+                  value={course.isPublished ? 'published' : 'draft'}
+                  onValueChange={handleStatusChange}
+                  disabled={publishCourseMutation.isPending || unpublishCourseMutation.isPending}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="draft">Draft</SelectItem>
+                    <SelectItem value="published">Published</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+
+              <BatchSelector courseId={courseId} />
 
               <Separator />
 
@@ -283,6 +354,7 @@ export const CourseView = ({ courseId }: CourseViewProps) => {
           </CardContent>
         </Card>
       )}
+
     </div>
   );
 };
