@@ -5,7 +5,7 @@ import { useCourseStatistics } from '@/data/admin/statistics';
 import { format, subDays } from 'date-fns';
 import { convertDateRangeToStrings, type DateRange } from '@/lib/date-filters';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ReferenceArea, type MouseHandlerDataParam } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ReferenceArea } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { RotateCcw } from 'lucide-react';
 import { AreaChartSkeleton } from '@/components/ui/area-chart-skeleton';
@@ -57,8 +57,9 @@ export const EnrollmentChart = ({ dateRange: externalDateRange, onDateRangeChang
     return new Intl.NumberFormat('en-US').format(num);
   };
 
-  const handleMouseDown = (e: MouseHandlerDataParam) => {
-    const label = String(e?.activeLabel);
+  const handleMouseDown: (state: unknown, e: unknown) => void = (_state, e) => {
+    const event = e as { activeLabel?: string | number };
+    const label = String(event?.activeLabel);
     if (label && label !== 'undefined') {
       setIsDragging(true);
       setRefAreaLeft(label);
@@ -66,18 +67,20 @@ export const EnrollmentChart = ({ dateRange: externalDateRange, onDateRangeChang
     }
   };
 
-  const handleMouseMove = (e: MouseHandlerDataParam) => {
-    const label = String(e?.activeLabel);
+  const handleMouseMove: (state: unknown, e: unknown) => void = (_state, e) => {
+    const event = e as { activeLabel?: string | number };
+    const label = String(event?.activeLabel);
     if (isDragging && refAreaLeft && label && label !== 'undefined') {
       setRefAreaRight(label);
     }
   };
 
-  const handleMouseUp = (e: MouseHandlerDataParam) => {
+  const handleMouseUp: (state: unknown, e: unknown) => void = (_state, e) => {
     setIsDragging(false);
-    const label = String(e?.activeLabel);
+    const event = e as { activeLabel?: string | number; clientX?: number; clientY?: number };
+    const label = String(event?.activeLabel);
     if (refAreaLeft && refAreaRight && refAreaLeft !== label) {
-      const mouseEvent = e as unknown as { clientX?: number; clientY?: number };
+      const mouseEvent = event;
       setPopoverPosition({
         x: Number(mouseEvent?.clientX || 0),
         y: Number(mouseEvent?.clientY || 0),

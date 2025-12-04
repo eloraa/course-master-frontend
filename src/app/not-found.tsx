@@ -7,7 +7,7 @@ import React from 'react';
 const NotFound = () => {
   const router = useRouter();
   return (
-    <main className="pt-28 md:px-10 px-5 flex flex-col items-center text-center">
+    <main className="md:px-10 px-5 flex flex-col items-center text-center h-full justify-center">
       <figure className="max-w-64">
         <svg width="180" height="180" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path

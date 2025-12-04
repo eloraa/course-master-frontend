@@ -62,11 +62,6 @@ export const Header = () => {
           href: '/admin/course/published',
           icon: CheckIcon,
         },
-        {
-          name: 'Archived',
-          href: '/admin/course/archived',
-          icon: ArchiveIcon,
-        },
       ],
     },
   ];

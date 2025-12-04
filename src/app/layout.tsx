@@ -5,6 +5,7 @@ import { cookies } from 'next/headers';
 import { getTheme } from '@/lib/server/theme';
 import { themeColor } from '@/constants';
 import { ThemeInitializer } from '@/components/theme/initializer/theme-initializer';
+import { Toaster } from '@/components/ui/sonner';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -50,6 +51,7 @@ export default async function RootLayout({
       <body>
         <div style={{ display: 'contents', height: '100%' }}>
           <ThemeInitializer selectedTheme={selectedTheme} variant={variant} />
+          <Toaster />
           {children}
           {settingsModal}
         </div>
