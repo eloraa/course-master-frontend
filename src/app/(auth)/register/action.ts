@@ -8,8 +8,7 @@ const passwordSchema = z
   .min(8, 'At least 8 characters')
   .regex(/[A-Z]/, 'Add an uppercase letter')
   .regex(/[a-z]/, 'Add a lowercase letter')
-  .regex(/[0-9]/, 'Add a number')
-  .regex(/[^A-Za-z0-9]/, 'Add a special character');
+  .regex(/[0-9]/, 'Add a number');
 
 const registerSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -50,9 +49,9 @@ export async function register(_prevState: RegisterState, formData: FormData): P
   const parsed = registerSchema.safeParse(rawData);
 
   if (!parsed.success) {
-    const { fieldErrors } = parsed.error.flatten();
+    const { fieldErrors } = parsed.error.flatten(({ message }) => message);
     return {
-      message: 'Please fix the errors below and try again.',
+      message: 'Please fix the errors and try again.',
       fieldErrors: {
         name: fieldErrors.name,
         email: fieldErrors.email,

@@ -1,15 +1,34 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import Link from 'next/link';
 import { useFormStatus } from 'react-dom';
+import { CheckIcon } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
 import { register } from './action';
 
-const passwordRequirements = ['At least 8 characters', 'Uppercase & lowercase letters', 'At least one number', 'At least one special character'];
+const passwordRequirementDefinitions = [
+  {
+    label: 'At least 8 characters',
+    test: (value: string) => value.length >= 8,
+  },
+  {
+    label: 'Uppercase letter',
+    test: (value: string) => /[A-Z]/.test(value),
+  },
+  {
+    label: 'Lowercase letter',
+    test: (value: string) => /[a-z]/.test(value),
+  },
+  {
+    label: 'At least one number',
+    test: (value: string) => /[0-9]/.test(value),
+  },
+];
 
 const initialRegisterState = {
   message: undefined as string | undefined,
@@ -64,6 +83,7 @@ function SubmitButton() {
 
 export function RegisterForm() {
   const [state, formAction] = useActionState(register, initialRegisterState);
+  const [password, setPassword] = useState('');
 
   return (
     <form action={formAction} className="mt-4 space-y-4">
@@ -87,12 +107,36 @@ export function RegisterForm() {
         <label htmlFor="password" className="text-sm font-medium">
           Password
         </label>
-        <Input id="password" name="password" type="password" placeholder="Secure password" required />
+        <Input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Secure password"
+          required
+          value={password}
+          onChange={event => setPassword(event.target.value)}
+        />
         <FieldError errors={state.fieldErrors?.password} />
-        <ul className="mt-2 text-xs text-muted-foreground list-disc list-inside space-y-1">
-          {passwordRequirements.map(requirement => (
-            <li key={requirement}>{requirement}</li>
-          ))}
+        <ul className="mt-2 text-xs space-y-1">
+          {passwordRequirementDefinitions.map(requirement => {
+            const met = requirement.test(password);
+            return (
+              <li key={requirement.label} className="flex items-center gap-2">
+                <span
+                  className={cn(
+                    'inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px] transition-colors',
+                    met ? 'border-primary text-primary' : 'border-muted text-muted-foreground',
+                  )}
+                  aria-hidden="true"
+                >
+                  <CheckIcon className={cn('h-3 w-3', met ? 'opacity-100' : 'opacity-0')} />
+                </span>
+                <span className={cn('transition-colors', met ? 'text-foreground' : 'text-muted-foreground')}>
+                  {requirement.label}
+                </span>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
