@@ -5,10 +5,8 @@ import { Header } from '@/components/admin-dashboard/header/header';
 
 export default async function AuthLayout({
   children,
-  settingsModal,
 }: Readonly<{
   children: React.ReactNode;
-  settingsModal: React.ReactNode;
 }>) {
   const session = await getServerAuthSession();
 
@@ -22,7 +20,6 @@ export default async function AuthLayout({
     <QueryProvider>
       <Header />
       {children}
-      {settingsModal}
     </QueryProvider>
   );
 }

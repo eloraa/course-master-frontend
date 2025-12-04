@@ -235,7 +235,7 @@ export const Header = () => {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
-                  <Link href="/setting" className="cursor-pointer">
+                  <Link href="/settings" className="cursor-pointer">
                     Setting
                   </Link>
                 </DropdownMenuItem>

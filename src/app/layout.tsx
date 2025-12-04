@@ -32,8 +32,10 @@ export async function generateViewport(): Promise<Viewport> {
 
 export default async function RootLayout({
   children,
+  settingsModal,
 }: Readonly<{
   children: React.ReactNode;
+  settingsModal: React.ReactNode;
 }>) {
   const cookieStore = await cookies();
   const { selectedTheme, theme, variant } = getTheme({ cookies: cookieStore });
@@ -49,6 +51,7 @@ export default async function RootLayout({
         <div style={{ display: 'contents', height: '100%' }}>
           <ThemeInitializer selectedTheme={selectedTheme} variant={variant} />
           {children}
+          {settingsModal}
         </div>
       </body>
     </html>

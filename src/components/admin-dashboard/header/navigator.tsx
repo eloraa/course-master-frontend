@@ -11,6 +11,7 @@ import { Sun } from 'lucide-react';
 import { Moon } from 'lucide-react';
 import { Laptop2 } from 'lucide-react';
 import { useTheme } from '@/store/theme';
+import Link from 'next/link';
 
 type NavigatorItem = {
   name: string;
@@ -91,9 +92,11 @@ export function Navigator({ open, setOpen, navigation }: NavigatorProps) {
             <User className="mr-2 !h-4 !w-4" />
             <span>Profile</span>
           </CommandItem>
-          <CommandItem>
-            <Settings className="mr-2 !h-4 !w-4" />
-            <span>Settings</span>
+          <CommandItem asChild>
+            <Link href="/settings">
+              <Settings className="mr-2 !h-4 !w-4" />
+              <span>Settings</span>
+            </Link>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
