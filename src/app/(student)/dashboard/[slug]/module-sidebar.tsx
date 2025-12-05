@@ -99,20 +99,6 @@ const ModuleItem = ({ module, courseId, courseSlug, isOpen, onToggle, currentLes
           <div className="ml-6 mt-1 space-y-1">
             {lessons.map(lesson => {
               const isActive = currentLessonId === lesson.id;
-              const isQuizOrAssignment = lesson.type === 'quiz' || lesson.type === 'assignment';
-
-              if (isQuizOrAssignment) {
-                return (
-                  <div key={lesson.id} className="flex items-center gap-2 w-full p-2 rounded-md opacity-50 cursor-not-allowed">
-                    <LessonIcon type={lesson.type} isActive={false} />
-                    <div className="flex flex-col gap-0.5 flex-1 min-w-0">
-                      <span className="text-sm line-clamp-2">{lesson.title}</span>
-                      {lesson.duration && <span className="text-xs text-muted-foreground">{lesson.duration} min</span>}
-                    </div>
-                    <Lock className="w-3 h-3 text-muted-foreground shrink-0" />
-                  </div>
-                );
-              }
 
               return (
                 <Link
