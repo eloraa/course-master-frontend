@@ -103,7 +103,9 @@ export const AssignmentResults = ({ assignment }: AssignmentResultsProps) => {
             <CardTitle className="text-base">Feedback</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm whitespace-pre-wrap">{submission.feedback}</p>
+            <div className="prose prose-sm max-w-none dark:prose-invert">
+              <MarkdownPreview content={submission.feedback} />
+            </div>
           </CardContent>
         </Card>
       )}
