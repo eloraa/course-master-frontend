@@ -10,7 +10,7 @@ import type {
 } from '@/data/admin/statistics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { DateRangePicker } from './_components/date-range-picker';
+import { DateRangePicker } from './date-range-picker';
 
 interface StatisticsCardsProps {
   dateRange: DateRange;
