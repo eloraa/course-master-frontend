@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signIn } from 'next-auth/react';
+import { queryClient } from '@/app/providers';
 
 const loginSchema = z.object({
   email: z.email('Invalid email address'),
@@ -45,6 +46,7 @@ export function LoginForm() {
       if (res?.ok) {
         router.push('/');
         router.refresh();
+        queryClient.invalidateQueries({ queryKey: ['session'] });
       } else {
         setError(res?.error || 'Invalid credentials');
       }

@@ -27,6 +27,7 @@ import { toast } from 'sonner';
 import { createLesson, updateLesson } from '@/data/admin/lessons';
 import { CustomMarkdownEditor } from '@/components/markdown/custom-markdown-editor';
 import { QuizPopover } from './quiz-popover';
+import { AssignmentPopover } from './assignment-popover';
 import { X } from 'lucide-react';
 import type { Lesson, CreateLessonPayload, UpdateLessonPayload } from '@/data/admin/lessons';
 
@@ -56,6 +57,8 @@ export const LessonFormDialog = ({
   const [isPublished, setIsPublished] = useState(false);
   const [selectedQuizId, setSelectedQuizId] = useState<string>('');
   const [selectedQuizTitle, setSelectedQuizTitle] = useState<string>('');
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string>('');
+  const [selectedAssignmentTitle, setSelectedAssignmentTitle] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const queryClient = useQueryClient();
@@ -72,9 +75,14 @@ export const LessonFormDialog = ({
         if (lesson.type === 'quiz') {
           setSelectedQuizId(lesson.content);
           setSelectedQuizTitle(lesson.content); // Will be replaced with actual title when selected
+        } else if (lesson.type === 'assignment') {
+          setSelectedAssignmentId(lesson.content);
+          setSelectedAssignmentTitle(lesson.content); // Will be replaced with actual title when selected
         } else {
           setSelectedQuizId('');
           setSelectedQuizTitle('');
+          setSelectedAssignmentId('');
+          setSelectedAssignmentTitle('');
         }
       } else {
         setTitle('');
@@ -84,6 +92,8 @@ export const LessonFormDialog = ({
         setIsPublished(false);
         setSelectedQuizId('');
         setSelectedQuizTitle('');
+        setSelectedAssignmentId('');
+        setSelectedAssignmentTitle('');
       }
       setErrors({});
     }
@@ -134,6 +144,10 @@ export const LessonFormDialog = ({
       if (!selectedQuizId) {
         newErrors.content = 'Please select a quiz';
       }
+    } else if (type === 'assignment') {
+      if (!selectedAssignmentId) {
+        newErrors.content = 'Please select an assignment';
+      }
     } else if (!content.trim()) {
       newErrors.content = 'Content is required';
     }
@@ -158,7 +172,7 @@ export const LessonFormDialog = ({
       const payload: UpdateLessonPayload = {
         title: title.trim(),
         type,
-        content: type === 'quiz' ? selectedQuizId : content.trim(),
+        content: type === 'quiz' ? selectedQuizId : type === 'assignment' ? selectedAssignmentId : content.trim(),
         duration: type === 'video' && duration ? parseInt(duration, 10) : undefined,
         isPublished,
       };
@@ -169,7 +183,7 @@ export const LessonFormDialog = ({
         course: courseId,
         module: moduleId,
         type,
-        content: type === 'quiz' ? selectedQuizId : content.trim(),
+        content: type === 'quiz' ? selectedQuizId : type === 'assignment' ? selectedAssignmentId : content.trim(),
         duration: type === 'video' && duration ? parseInt(duration, 10) : undefined,
         order: nextOrder,
         isPublished,
@@ -281,7 +295,7 @@ export const LessonFormDialog = ({
               {/* Content */}
               <div className="space-y-2">
                 <Label htmlFor="content">
-                  {type === 'article' ? 'Article Content (Markdown)' : type === 'quiz' ? 'Select Quiz' : 'Content URL/Reference'} <span className="text-destructive-primary">*</span>
+                  {type === 'article' ? 'Article Content (Markdown)' : type === 'quiz' ? 'Select Quiz' : type === 'assignment' ? 'Select Assignment' : 'Content URL/Reference'} <span className="text-destructive-primary">*</span>
                 </Label>
                 {type === 'article' ? (
                   <>
@@ -318,6 +332,33 @@ export const LessonFormDialog = ({
                       </div>
                     )}
                   </div>
+                ) : type === 'assignment' ? (
+                  <div className="space-y-3">
+                    <AssignmentPopover
+                      courseId={courseId}
+                      selectedAssignmentId={selectedAssignmentId}
+                      selectedAssignmentTitle={selectedAssignmentTitle}
+                      onSelect={(assignmentId, assignmentTitle) => {
+                        setSelectedAssignmentId(assignmentId);
+                        setSelectedAssignmentTitle(assignmentTitle);
+                      }}
+                    />
+                    {selectedAssignmentId && (
+                      <div className="flex items-center justify-between p-3 border rounded-lg bg-muted/50">
+                        <span className="text-sm font-medium">{selectedAssignmentTitle}</span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedAssignmentId('');
+                            setSelectedAssignmentTitle('');
+                          }}
+                          className="text-muted-foreground hover:text-foreground"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 ) : (
                   <Input
                     id="content"
@@ -326,7 +367,7 @@ export const LessonFormDialog = ({
                     placeholder={
                       type === 'video'
                         ? 'e.g., https://example.com/video.mp4'
-                        : 'Assignment ID'
+                        : 'Content URL/Reference'
                     }
                     disabled={isSubmitting}
                   />
@@ -357,7 +398,12 @@ export const LessonFormDialog = ({
                       <li>• Create new quizzes from the "Manage Quizzes" page</li>
                     </>
                   )}
-                  {type === 'assignment' && <li>• Paste the Assignment ID from the assignment creation page</li>}
+                  {type === 'assignment' && (
+                    <>
+                      <li>• Select an existing assignment from the popover</li>
+                      <li>• Create new assignments from the "Manage Assignments" page</li>
+                    </>
+                  )}
                 </ul>
               </div>
             </TabsContent>
