@@ -120,14 +120,18 @@ export const QuizForm = ({ courseId, quiz }: QuizFormProps) => {
         totalPoints,
       };
 
+      const quizPayload = {
+        ...payload,
+        ...(selectedModuleId && { module: selectedModuleId }),
+      };
+
       if (isEditMode && quiz) {
-        await updateQuiz(quiz.id, payload as UpdateQuizPayload);
+        await updateQuiz(quiz.id, quizPayload as UpdateQuizPayload);
         toast.success('Quiz updated successfully');
       } else {
         await createQuiz({
-          ...payload,
+          ...quizPayload,
           course: courseId,
-          ...(selectedModuleId && { module: selectedModuleId }),
         } as CreateQuizPayload);
         toast.success('Quiz created successfully');
       }

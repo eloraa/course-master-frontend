@@ -1,36 +1,174 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Course Master - Student Learning Platform
 
-## Getting Started
+A modern student learning platform built with Next.js 16, featuring course browsing, enrollment, lesson management, quizzes, assignments, and an admin dashboard for course management.
 
-First, run the development server:
+## 🚀 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+### Student Portal
+- **Course Discovery**: Browse and enroll in courses with pagination
+- **Dashboard**: View enrolled courses with progress tracking
+- **Learning Interface**: Navigate through modules and lessons
+- **Lesson Types**: Support for videos, articles, quizzes, and assignments
+- **Quiz System**: Interactive quizzes with real-time submission
+- **Assignment System**: Submit assignments with rich markdown support
+- **Grade Tracking**: View submission status, grades, and instructor feedback
+
+### Admin Portal
+- **Course Management**: Create, edit, and publish courses
+- **Module & Lesson Management**: Organize content with flexible lesson types
+- **Quiz & Assignment Creation**: Create assessments with rich text support
+- **Student Grading**: Grade submissions and provide markdown feedback
+- **Submission Management**: Review and grade student submissions in a table format
+
+## 🛠️ Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/eloraa/course-master-frontend
+   cd course-master-frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   ```
+
+3. **Set up environment variables**
+   - Copy `.env` file from the example and configure your values
+
+4. **Run the development server**
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   ```
+
+5. **Open [http://localhost:3000](http://localhost:3000)** with your browser to see the result.
+
+## 📋 Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+### API Configuration
+```env
+# API endpoints
+API_URL=http://localhost:8080/v1
+NEXT_PUBLIC_API_URL=http://localhost:8080/v1
+
+# Full API URL (for raw API calls)
+RAW_API_URL=http://localhost:8080
+
+# Frontend application URL
+APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL=http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Authentication (NextAuth.js)
+```env
+# NextAuth.js configuration
+NEXTAUTH_SECRET=your-secret-key-here
+NEXTAUTH_URL=http://localhost:3000
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Notes
+- Replace `your-secret-key-here` with a randomly generated secret string
+- Make sure the API server is running on `http://localhost:8080` or update the URLs accordingly
+- The application requires both frontend (localhost:3000) and backend (localhost:8080) to be running
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🛠️ Tech Stack
 
-## Learn More
+### Core Framework
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **TypeScript** - Type safety
 
-To learn more about Next.js, take a look at the following resources:
+### Styling & UI
+- **Tailwind CSS 4** - Utility-first CSS framework
+- **Radix UI** - Headless UI components
+- **Lucide React** - Icon library
+- **Class Variance Authority** - Component variants
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### State Management & Data
+- **TanStack Query** - Server state management
+- **Zustand** - Client state management
+- **React Hook Form** - Form management
+- **Zod** - Schema validation
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Rich Text & Markdown
+- **React Markdown** - Markdown renderer
+- **@uiw/react-md-editor** - Markdown editor
+- **react-simple-code-editor** - Code editor
+- **PrismJS** - Syntax highlighting
 
-## Deploy on Vercel
+### Additional Libraries
+- **Recharts** - Data visualization
+- **Sonner** - Toast notifications
+- **Date-fns** - Date manipulation
+- **React Day Picker** - Date picker
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📁 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+src/
+├── app/                          # Next.js App Router
+│   ├── (auth)/                  # Authentication pages
+│   ├── (public)/               # Public pages (homepage, course listing)
+│   ├── (student)/              # Student dashboard and learning interface
+│   └── (admin-dashboard)/      # Admin dashboard
+├── components/                  # Reusable UI components
+│   ├── markdown/              # Markdown editor and preview
+│   ├── ui/                    # Shadcn/ui components
+│   └── data-table/            # Data table components
+├── data/                      # API hooks and data layer
+│   ├── admin/                 # Admin-specific data hooks
+│   ├── public/                # Public-facing data hooks
+│   └── student/               # Student-facing data hooks
+└── lib/                       # Utilities and configurations
+```
+
+## 📊 Key Features Implementation
+
+### Student Features
+- **Course Enrollment**: Join courses and track progress
+- **Lesson Navigation**: Complete lessons with visual indicators
+- **Quiz System**: Answer questions with visual feedback
+- **Assignment Submission**: Write answers using rich markdown editor
+- **Grade Tracking**: View submission status and instructor feedback
+
+### Admin Features
+- **Course Management**: Create and manage courses
+- **Content Creation**: Add lessons, quizzes, and assignments
+- **Grading Interface**: Review and grade student submissions
+- **Rich Text Feedback**: Provide formatted feedback to students
+
+## 🎯 Getting Started
+
+1. **Start the backend API** (make sure it's running on port 8080)
+2. **Install frontend dependencies**: `npm install`
+3. **Configure environment variables** in `.env`
+4. **Run development server**: `npm run dev`
+5. **Access the application** at http://localhost:3000
+
+## 🔧 Scripts
+
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
+```
+
+## 📝 Notes
+
+- This is a frontend-only application and requires a backend API server
+- The application uses NextAuth.js for authentication (not fully implemented in this frontend)
+- All API calls are configured to work with a localhost:8080 backend
+- Markdown content is rendered using React Markdown with custom components
+- The admin dashboard provides comprehensive course management features
