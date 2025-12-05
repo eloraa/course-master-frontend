@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { Assignment } from '@/data/student/course-content';
+import { MarkdownEditor } from '@/components/markdown/markdown-editor';
+import { MarkdownPreview } from '@/components/markdown/markdown';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AlertCircle, CheckCircle2, Clock, Download } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -113,7 +114,9 @@ export const AssignmentViewer = ({ assignment, courseId, onSubmit, isSubmitting 
             <CardTitle className="text-base">Instructions</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm whitespace-pre-wrap">{assignment.instructions}</p>
+            <div className="prose prose-sm max-w-none dark:prose-invert">
+              <MarkdownPreview content={assignment.instructions} />
+            </div>
           </CardContent>
         </Card>
       )}
@@ -150,17 +153,12 @@ export const AssignmentViewer = ({ assignment, courseId, onSubmit, isSubmitting 
           <CardHeader>
             <CardTitle className="text-base">Your Answer</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Textarea
-              placeholder="Enter your answer here..."
+          <CardContent>
+            <MarkdownEditor
               value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              className="min-h-32"
-              disabled={isSubmitting}
+              onChange={setAnswer}
+              className="border rounded-md"
             />
-            <div className="text-xs text-muted-foreground">
-              {answer.length} characters
-            </div>
           </CardContent>
         </Card>
       )}

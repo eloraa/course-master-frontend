@@ -1,6 +1,7 @@
 'use client';
 
 import { Assignment } from '@/data/student/course-content';
+import { MarkdownPreview } from '@/components/markdown/markdown';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2, XCircle, AlertCircle, Clock } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
@@ -114,7 +115,9 @@ export const AssignmentResults = ({ assignment }: AssignmentResultsProps) => {
             <CardTitle className="text-base">Your Submission</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-sm whitespace-pre-wrap bg-muted/30 p-4 rounded-md border">{submission.answer}</p>
+            <div className="prose prose-sm max-w-none dark:prose-invert">
+              <MarkdownPreview content={submission.answer} />
+            </div>
           </CardContent>
         </Card>
       )}
